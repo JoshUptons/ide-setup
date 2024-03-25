@@ -6,12 +6,13 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'sbdchd/neoformat'
 Plug 'machakann/vim-highlightedyank'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.4' }
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'AlexvZyl/nordic.nvim', { 'branch': 'main' }
 Plug 'christoomey/vim-tmux-navigator'
-
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'joerdav/templ'
 
 call plug#end()
 
@@ -22,10 +23,13 @@ filetype on
 filetype plugin on
 filetype indent on
 syntax on
-set number
+set relativenumber
 set smartindent
 set shiftwidth=4
-set tabstop=2
+set tabstop=4
+autocmd FileType go setlocal shiftwidth=2 tabstop=2
+autocmd FileType javascript setlocal shiftwidth=2 tabstop=2
+autocmd FileType typescript setlocal shiftwidth=2 tabstop=2
 set expandtab
 set nobackup
 set nowritebackup
@@ -45,6 +49,11 @@ set cmdheight=2
 set updatetime=300
 set shortmess+=c
 set autowrite
+if exists('colorcolumn')
+    set colorcolumn=80
+else
+    au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
+endif
 hi Visual guifg=Black guibg=Silver gui=none
 
 " Go syntax highlighting
@@ -94,7 +103,7 @@ let g:black#settings = {
 let g:neoformat_basic_format_align = 1
 let g:neoformat_basic_format_retab = 1
 let g:neoformat_basic_format_trim = 1
-let g:neoformat_try_node_exe = 0
+let g:neoformat_try_node_exe = 1
 
 autocmd BufWritePre *.js Neoformat
 autocmd BufWritePre *.tsx Neoformat
@@ -218,7 +227,7 @@ if isdirectory('./node_modules') && isdirectory('./node_modules/eslint')
     let g:coc_global_extensions += ['coc-eslint']
 endif
 
-nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gd <Plug>(coc-defintion)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
@@ -230,3 +239,11 @@ else
 endif
 
 inoremap <silent><expr> <TAB> coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<TAB>"
+
+" set html as content type for vue files
+autocmd BufRead,BufNewFile *.vue setfiletype html
+autocmd BufRead,BufNewFile *.templ setfiletype html
+
+highlight Normal guibg=#111533
+highlight NormalNC guibg=#111111
+
